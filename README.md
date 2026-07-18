@@ -33,6 +33,20 @@ npm run build      # type-check + build to dist/
 npm run preview    # serve the built bundle locally
 ```
 
+## Deployment (GitHub Pages)
+
+Pushes to `main` build the app and publish it to GitHub Pages via
+`.github/workflows/deploy-pages.yml`. The production build uses a base path of
+`/driven-journal/`, so the site is served at:
+
+```
+https://joelvandiver.github.io/driven-journal/
+```
+
+**One-time setup:** in the repository's **Settings → Pages**, set **Source** to
+**GitHub Actions**. After that, every push to `main` deploys automatically (you
+can also trigger a run manually from the **Actions** tab).
+
 ## How it works
 
 All entries live in an IndexedDB database named `driven-journal` in the browser.
