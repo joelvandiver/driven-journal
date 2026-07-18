@@ -7,13 +7,13 @@ marked.setOptions({
 });
 
 // Parse Markdown to HTML, then sanitize to protect against injected scripts.
-export function renderMarkdown(md) {
-  const rawHtml = marked.parse(md || '');
+export function renderMarkdown(md: string): string {
+  const rawHtml = marked.parse(md || '', { async: false });
   return DOMPurify.sanitize(rawHtml);
 }
 
 // Short plain-text preview for the entry list.
-export function excerpt(md, max = 120) {
+export function excerpt(md: string, max = 120): string {
   const text = (md || '')
     .replace(/[#*_`>~\-!\[\]()]/g, '')
     .replace(/\s+/g, ' ')

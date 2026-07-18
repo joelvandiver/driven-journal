@@ -1,14 +1,23 @@
 import { useState } from 'react';
-import { renderMarkdown } from '../markdown.js';
+import { renderMarkdown } from '../markdown';
+import type { Entry, EntryInput } from '../db';
 
-export default function EntryEditor({ initial, onSave, onCancel }) {
+interface EntryEditorProps {
+  initial: Entry | null;
+  onSave: (input: EntryInput) => void;
+  onCancel: () => void;
+}
+
+type Tab = 'write' | 'preview';
+
+export default function EntryEditor({ initial, onSave, onCancel }: EntryEditorProps) {
   const [title, setTitle] = useState(initial?.title ?? '');
   const [body, setBody] = useState(initial?.body ?? '');
-  const [tab, setTab] = useState('write'); // 'write' | 'preview'
+  const [tab, setTab] = useState<Tab>('write');
 
   const isNew = !initial;
 
-  function handleSubmit(e) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSave({ title, body });
   }
@@ -62,9 +71,7 @@ export default function EntryEditor({ initial, onSave, onCancel }) {
       ) : (
         <div className="preview-pane markdown">
           {body.trim() ? (
-            <div
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }}
-            />
+            <div dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }} />
           ) : (
             <p className="muted">Nothing to preview yet.</p>
           )}

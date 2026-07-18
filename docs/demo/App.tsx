@@ -1,34 +1,35 @@
 import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, createEntry, updateEntry, deleteEntry } from './db.js';
-import EntryList from './components/EntryList.jsx';
-import EntryView from './components/EntryView.jsx';
-import EntryEditor from './components/EntryEditor.jsx';
+import { db, createEntry, updateEntry, deleteEntry, type Entry, type EntryInput } from './db';
+import EntryList from './components/EntryList';
+import EntryView from './components/EntryView';
+import EntryEditor from './components/EntryEditor';
 
-// Right-pane modes: 'empty' | 'view' | 'edit' | 'new'
+type Mode = 'empty' | 'view' | 'edit' | 'new';
+
 export default function App() {
-  const [selectedId, setSelectedId] = useState(null);
-  const [mode, setMode] = useState('empty');
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [mode, setMode] = useState<Mode>('empty');
 
   const entries = useLiveQuery(
     () => db.entries.orderBy('updatedAt').reverse().toArray(),
     [],
-    []
+    [] as Entry[]
   );
 
-  const selected = entries.find((e) => e.id === selectedId) || null;
+  const selected = entries.find((e) => e.id === selectedId) ?? null;
 
   function handleNew() {
     setSelectedId(null);
     setMode('new');
   }
 
-  function handleSelect(id) {
+  function handleSelect(id: number) {
     setSelectedId(id);
     setMode('view');
   }
 
-  async function handleSave({ title, body }) {
+  async function handleSave({ title, body }: EntryInput) {
     if (mode === 'new') {
       const id = await createEntry({ title, body });
       setSelectedId(id);
@@ -38,7 +39,7 @@ export default function App() {
     setMode('view');
   }
 
-  async function handleDelete(id) {
+  async function handleDelete(id: number) {
     await deleteEntry(id);
     if (id === selectedId) {
       setSelectedId(null);
@@ -86,7 +87,7 @@ export default function App() {
           <EntryView
             entry={selected}
             onEdit={() => setMode('edit')}
-            onDelete={() => handleDelete(selected.id)}
+            onDelete={() => handleDelete(selected.id!)}
           />
         )}
 

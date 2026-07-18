@@ -1,14 +1,21 @@
 import { useState } from 'react';
-import { renderMarkdown } from '../markdown.js';
+import { renderMarkdown } from '../markdown';
+import type { Entry } from '../db';
 
-function formatDateTime(ts) {
+interface EntryViewProps {
+  entry: Entry;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+function formatDateTime(ts: number): string {
   return new Date(ts).toLocaleString(undefined, {
     dateStyle: 'long',
     timeStyle: 'short',
   });
 }
 
-export default function EntryView({ entry, onEdit, onDelete }) {
+export default function EntryView({ entry, onEdit, onDelete }: EntryViewProps) {
   const [confirming, setConfirming] = useState(false);
 
   return (

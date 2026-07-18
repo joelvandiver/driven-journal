@@ -14,7 +14,7 @@ journal never leaves your machine.
 
 ## Tech stack
 
-- [React 19](https://react.dev) + [Vite](https://vitejs.dev)
+- [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org) + [Vite](https://vitejs.dev)
 - [Dexie](https://dexie.org) + `dexie-react-hooks` for reactive IndexedDB storage
 - [marked](https://marked.js.org) + [DOMPurify](https://github.com/cure53/DOMPurify)
 
@@ -25,11 +25,12 @@ npm install
 npm run dev      # start the dev server (http://localhost:5173)
 ```
 
-Build a production bundle:
+Type-check, build, and preview a production bundle:
 
 ```bash
-npm run build
-npm run preview  # serve the built bundle locally
+npm run typecheck  # tsc --noEmit
+npm run build      # type-check + build to dist/
+npm run preview    # serve the built bundle locally
 ```
 
 ## How it works
@@ -40,14 +41,21 @@ won't appear in another. Clearing site data will remove your entries.
 
 ## Project structure
 
+The app source lives under `docs/demo/` (the Vite root); tooling config sits at
+the repository root.
+
 ```
-src/
-  db.js                  # Dexie schema + CRUD helpers
-  markdown.js            # Markdown parsing + sanitization
-  App.jsx                # Layout and view-state orchestration
+docs/demo/
+  index.html             # Vite entry HTML
+  main.tsx               # React bootstrap
+  db.ts                  # Dexie schema + typed CRUD helpers
+  markdown.ts            # Markdown parsing + sanitization
+  App.tsx                # Layout and view-state orchestration
   components/
-    EntryList.jsx        # Sidebar list of entries
-    EntryView.jsx        # Rendered entry + edit/delete actions
-    EntryEditor.jsx      # Markdown editor with Write/Preview tabs
+    EntryList.tsx        # Sidebar list of entries
+    EntryView.tsx        # Rendered entry + edit/delete actions
+    EntryEditor.tsx      # Markdown editor with Write/Preview tabs
   styles.css
+vite.config.ts           # Vite config (root = docs/demo, build → dist/)
+tsconfig.json            # TypeScript config
 ```

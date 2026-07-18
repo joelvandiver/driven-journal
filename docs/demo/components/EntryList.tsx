@@ -1,6 +1,13 @@
-import { excerpt } from '../markdown.js';
+import { excerpt } from '../markdown';
+import type { Entry } from '../db';
 
-function formatDate(ts) {
+interface EntryListProps {
+  entries: Entry[];
+  selectedId: number | null;
+  onSelect: (id: number) => void;
+}
+
+function formatDate(ts: number): string {
   return new Date(ts).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
@@ -8,7 +15,7 @@ function formatDate(ts) {
   });
 }
 
-export default function EntryList({ entries, selectedId, onSelect }) {
+export default function EntryList({ entries, selectedId, onSelect }: EntryListProps) {
   if (entries.length === 0) {
     return (
       <div className="list-empty">
@@ -26,7 +33,7 @@ export default function EntryList({ entries, selectedId, onSelect }) {
             className={
               'entry-item' + (entry.id === selectedId ? ' is-selected' : '')
             }
-            onClick={() => onSelect(entry.id)}
+            onClick={() => onSelect(entry.id!)}
           >
             <span className="entry-item-title">{entry.title}</span>
             <span className="entry-item-date">{formatDate(entry.updatedAt)}</span>
