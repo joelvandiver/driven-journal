@@ -1,0 +1,11 @@
+[package]
+name = "server-wasi"
+version = "0.1.0"
+edition = "2021"
+description = "The same Axum router, compiled to a wasm32-wasip2 WASI-HTTP component and served with `wasmtime serve`."
+
+[dependencies]
+api-core = { path = "../api-core" }
+axum = { version = "0.8", default-features = false, features = ["json", "query"] }
+wstd = "0.6"
+wstd-axum = "0.6"

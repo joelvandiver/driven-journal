@@ -1,0 +1,11 @@
+[package]
+name = "api-core"
+version = "0.1.0"
+edition = "2021"
+description = "Shared Axum router and text-analysis logic, reused by both the native MUSL server and the WASI/WASM component."
+
+[dependencies]
+axum = { version = "0.8", default-features = false, features = ["json", "query"] }
+tower-http = { version = "0.6", default-features = false, features = ["cors"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
