@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { renderMarkdown } from '../markdown';
+import { useRef, useState } from 'react';
+import { applyMarkdownAction, renderMarkdown } from '../markdown';
 import type { Entry, EntryInput } from '../db';
 
 interface EntryEditorProps {
@@ -14,12 +14,32 @@ export default function EntryEditor({ initial, onSave, onCancel }: EntryEditorPr
   const [title, setTitle] = useState(initial?.title ?? '');
   const [body, setBody] = useState(initial?.body ?? '');
   const [tab, setTab] = useState<Tab>('write');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const isNew = !initial;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSave({ title, body });
+  }
+
+  function insertMarkdown(action: 'bold' | 'italic' | 'code' | 'link' | 'bullet' | 'quote' | 'heading') {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = body.slice(start, end);
+    const inserted = applyMarkdownAction(selected, action);
+    const nextValue = `${body.slice(0, start)}${inserted}${body.slice(end)}`;
+
+    setBody(nextValue);
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const cursor = start + inserted.length;
+      textarea.setSelectionRange(cursor, cursor);
+    });
   }
 
   return (
@@ -58,16 +78,42 @@ export default function EntryEditor({ initial, onSave, onCancel }: EntryEditorPr
         >
           Preview
         </button>
-        <span className="editor-hint">Markdown supported</span>
+        <span className="editor-hint">WYSIWYG-style markdown helpers</span>
       </div>
 
       {tab === 'write' ? (
-        <textarea
-          className="body-input"
-          placeholder="Write your entry in Markdown…"
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-        />
+        <>
+          <div className="editor-toolbar" role="toolbar" aria-label="Markdown formatting">
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('bold')}>
+              Bold
+            </button>
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('italic')}>
+              Italic
+            </button>
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('code')}>
+              Code
+            </button>
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('link')}>
+              Link
+            </button>
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('bullet')}>
+              • List
+            </button>
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('quote')}>
+              Quote
+            </button>
+            <button type="button" className="toolbar-btn" onClick={() => insertMarkdown('heading')}>
+              Heading
+            </button>
+          </div>
+          <textarea
+            ref={textareaRef}
+            className="body-input"
+            placeholder="Write your entry in Markdown…"
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+          />
+        </>
       ) : (
         <div className="preview-pane markdown">
           {body.trim() ? (

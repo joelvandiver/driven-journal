@@ -12,6 +12,33 @@ export function renderMarkdown(md: string): string {
   return DOMPurify.sanitize(rawHtml);
 }
 
+export function formatSelection(value: string, action: 'bold' | 'italic' | 'code' | 'link' | 'bullet' | 'quote' | 'heading') {
+  const trimmed = value.trim();
+
+  switch (action) {
+    case 'bold':
+      return `**${trimmed || 'text'}**`;
+    case 'italic':
+      return `*${trimmed || 'text'}*`;
+    case 'code':
+      return `\`${trimmed || 'code'}\``;
+    case 'link':
+      return `[${trimmed || 'link'}](https://example.com)`;
+    case 'bullet':
+      return trimmed ? `- ${trimmed}` : '- ';
+    case 'quote':
+      return trimmed ? `> ${trimmed}` : '> ';
+    case 'heading':
+      return trimmed ? `# ${trimmed}` : '# ';
+    default:
+      return value;
+  }
+}
+
+export function applyMarkdownAction(value: string, action: 'bold' | 'italic' | 'code' | 'link' | 'bullet' | 'quote' | 'heading') {
+  return formatSelection(value, action);
+}
+
 // Short plain-text preview for the entry list.
 export function excerpt(md: string, max = 120): string {
   const text = (md || '')
